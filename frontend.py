@@ -103,7 +103,8 @@ def display_column_statistics(preprocessed_data):
     st.dataframe(stats)  # Display the statistics as a table
 
 def main():
-    st.title("Regression Analysis Tool")
+    st.title("THE LINEAR REGRESSION APP")
+    st.write("This app performs linear regression analysis on the uploaded dataset.")
     
     df, file_path = handle_file_upload()
     if df is not None:
