@@ -160,6 +160,11 @@ class RegressionAnalysis:
         self.results['MAE_test'] = mean_absolute_error(y_test, y_test_pred)
         self.results['RMSE_test'] = np.sqrt(self.results['MSE_test'])
         
+        # Store coefficients for Ridge and Lasso models
+        if self.model_type in ['ridge', 'lasso']:
+            self.results['coefficients'] = pd.Series(self.model.coef_, index=self.X.columns)
+        
+        # Store coefficients, std_errors, and p_values for Linear Regression
         if self.model_type == 'linear':
             X_train_const = sm.add_constant(X_train)
             ols_model = sm.OLS(y_train, X_train_const).fit()
@@ -168,7 +173,14 @@ class RegressionAnalysis:
             self.results['p_values'] = ols_model.pvalues
     
     def plot_residuals(self):
-        y_pred = self.model.predict(self.X)
+        # Apply polynomial transformation if polynomial degree > 1
+        if self.polynomial_degree > 1:
+            poly = PolynomialFeatures(degree=self.polynomial_degree)
+            X_transformed = poly.fit_transform(self.X)
+        else:
+            X_transformed = self.X
+        
+        y_pred = self.model.predict(X_transformed)  # Use transformed features for prediction
         residuals = self.y - y_pred
         plt.figure(figsize=(8, 6))
         sns.histplot(residuals, bins=30, kde=True)

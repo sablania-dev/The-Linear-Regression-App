@@ -95,11 +95,11 @@ def filter_dataset(df, feature_columns, target_column, file_path):
     filtered_df.to_excel(filtered_file_path, index=False, engine='openpyxl')
     return filtered_df, filtered_file_path
 
-def display_column_statistics(df):
-    """Display statistics (min, avg, max, etc.) of the selected, preprocessed, and transformed columns."""
-    st.write("### Column Statistics")
-    stats = df.describe().T  # Transpose for better readability
-    stats["median"] = df.median()  # Add median to the statistics
+def display_column_statistics(preprocessed_data):
+    """Display statistics (min, avg, max, etc.) of the preprocessed and transformed columns."""
+    st.write("### Column Statistics (After Transformation)")
+    stats = pd.DataFrame(preprocessed_data).describe().T  # Transpose for better readability
+    stats["median"] = pd.DataFrame(preprocessed_data).median()  # Add median to the statistics
     st.dataframe(stats)  # Display the statistics as a table
 
 def main():
@@ -132,15 +132,19 @@ def main():
         model_type = st.selectbox("Select Regression Model", ["linear", "ridge", "lasso"])
         outlier_removal = st.checkbox("Remove Outliers (Z-score Method)")
         
+        # Preprocess the data to apply transformations
+        scale_data = scaling_option != "None"
+        reg = RegressionAnalysis(
+            file_path, scale_data, polynomial_degree, model_type,
+            missing_value_option, outlier_removal, scaling_option
+        )
+        reg.load_data()  # Load the data
+        reg.preprocess_data()  # Preprocess the data
+        
         # Display column statistics after preprocessing
-        display_column_statistics(df)
+        display_column_statistics(reg.X)
         
         if st.button("Run Regression Analysis"):
-            scale_data = scaling_option != "None"
-            reg = RegressionAnalysis(
-                file_path, scale_data, polynomial_degree, model_type,
-                missing_value_option, outlier_removal, scaling_option
-            )
             results = reg.run_analysis()
             display_regression_results(results, model_type)
 
