@@ -25,7 +25,7 @@ This project is a regression analysis tool that allows users to perform differen
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/sablania-dev/The-Linear-Regression-App
 ```
 
 Navigate to the project directory:
