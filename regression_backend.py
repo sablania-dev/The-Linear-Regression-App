@@ -70,7 +70,7 @@ class RegressionAnalysis:
         grid_search.fit(X_train, y_train)
         self.results['best_params'] = grid_search.best_params_
         
-        # Plot training vs validation loss
+        # Save training vs validation loss plot
         plt.figure(figsize=(8, 6))
         plt.plot(param_grid['alpha'], -grid_search.cv_results_['mean_train_score'], label='Training Loss', marker='o')
         plt.plot(param_grid['alpha'], -grid_search.cv_results_['mean_test_score'], label='Validation Loss', marker='o')
@@ -79,9 +79,11 @@ class RegressionAnalysis:
         plt.ylabel('Loss')
         plt.legend()
         plt.title('Training vs Validation Loss')
-        plt.savefig(os.path.join(self.images_dir, "training_vs_validation_loss.png"))  # Save the plot in images folder
+        plot_path = os.path.join(self.images_dir, "training_vs_validation_loss.png")
+        plt.savefig(plot_path)  # Save the plot in images folder
         plt.close()  # Close the figure to free memory
         
+        self.results['tuning_plot_path'] = plot_path  # Save the plot path in results
         return grid_search.best_estimator_
     
     def train_model(self):

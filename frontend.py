@@ -32,6 +32,10 @@ def main():
             st.write("### Regression Results")
             st.json(results)  # Display the results
             
+            if model_type in ["ridge", "lasso"]:
+                st.write("### Training vs Validation Loss Plot")
+                st.image(results['tuning_plot_path'])  # Display the saved tuning plot
+            
             st.write("### Distribution Plots")
             st.image(os.path.join("images", "distribution_plots.png"))  # Load the saved distribution plots
             
