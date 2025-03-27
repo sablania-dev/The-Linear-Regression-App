@@ -102,13 +102,34 @@ class RegressionAnalysis:
             raise ValueError("Unsupported model type")
         
         self.model.fit(X_train, y_train)
-        y_pred = self.model.predict(X_test)
         
-        # Store results
-        self.results['R2'] = r2_score(y_test, y_pred)
-        self.results['MSE'] = mean_squared_error(y_test, y_pred)
-        self.results['MAE'] = mean_absolute_error(y_test, y_pred)
-        self.results['RMSE'] = np.sqrt(self.results['MSE'])
+        # Predictions
+        y_train_pred = self.model.predict(X_train)
+        y_test_pred = self.model.predict(X_test)
+        
+        # R² and Adjusted R² for training set
+        r2_train = r2_score(y_train, y_train_pred)
+        n_train, p_train = X_train.shape
+        adj_r2_train = 1 - ((1 - r2_train) * (n_train - 1) / (n_train - p_train - 1))
+        
+        # R² and Adjusted R² for test set
+        r2_test = r2_score(y_test, y_test_pred)
+        n_test, p_test = X_test.shape
+        adj_r2_test = 1 - ((1 - r2_test) * (n_test - 1) / (n_test - p_test - 1))
+        
+        # Store results for training set
+        self.results['R2_train'] = r2_train
+        self.results['Adjusted_R2_train'] = adj_r2_train
+        self.results['MSE_train'] = mean_squared_error(y_train, y_train_pred)
+        self.results['MAE_train'] = mean_absolute_error(y_train, y_train_pred)
+        self.results['RMSE_train'] = np.sqrt(self.results['MSE_train'])
+        
+        # Store results for test set
+        self.results['R2_test'] = r2_test
+        self.results['Adjusted_R2_test'] = adj_r2_test
+        self.results['MSE_test'] = mean_squared_error(y_test, y_test_pred)
+        self.results['MAE_test'] = mean_absolute_error(y_test, y_test_pred)
+        self.results['RMSE_test'] = np.sqrt(self.results['MSE_test'])
         
         if self.model_type == 'linear':
             X_train_const = sm.add_constant(X_train)
@@ -116,17 +137,6 @@ class RegressionAnalysis:
             self.results['coefficients'] = ols_model.params
             self.results['std_errors'] = ols_model.bse
             self.results['p_values'] = ols_model.pvalues
-            # self.results['anova'] = sm.stats.anova_lm(ols_model, typ=2)
-    
-    def plot_distributions(self):
-        plt.figure(figsize=(12, 6))
-        for i, col in enumerate(self.data.columns[:-1]):
-            plt.subplot(2, (len(self.data.columns) // 2) + 1, i + 1)
-            sns.histplot(self.data[col], kde=True)
-            plt.title(f'Distribution of {col}')
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.images_dir, "distribution_plots.png"))  # Save the plot in images folder
-        plt.close()  # Close the figure to free memory
     
     def plot_residuals(self):
         y_pred = self.model.predict(self.X)
@@ -141,7 +151,7 @@ class RegressionAnalysis:
         self.load_data()
         self.preprocess_data()
         self.train_model()
-        self.plot_distributions()
+        # Removed call to plot_distributions
         self.plot_residuals()
         return self.results  # Return the results instead of printing
 
