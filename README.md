@@ -28,12 +28,6 @@ Clone the repository:
 git clone https://github.com/sablania-dev/The-Linear-Regression-App
 ```
 
-Navigate to the project directory:
-
-```bash
-cd regression-analysis
-```
-
 Install the required dependencies:
 
 ```bash
@@ -42,16 +36,16 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-Start the backend server:
+<!-- Start the backend server:
 
 ```bash
 python regression_backend.py
-```
+``` -->
 
 Run the Streamlit frontend:
 
 ```bash
-streamlit run regression_frontend.py
+streamlit run frontend.py
 ```
 
 Upload a CSV or Excel file and select the desired regression settings through the Streamlit UI.
