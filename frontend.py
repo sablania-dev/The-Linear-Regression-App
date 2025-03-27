@@ -68,6 +68,15 @@ def main():
             }
             st.table(pd.DataFrame(metrics))  # Display metrics as a table
             
+            # Show best parameters if the model is ridge or lasso
+            if model_type in ["ridge", "lasso"] and "best_params" in results:
+                st.write("### Best Parameters")
+                best_params_df = pd.DataFrame({
+                    "Parameter": list(results["best_params"].keys()),
+                    "Value": list(results["best_params"].values())
+                })
+                st.table(best_params_df)  # Display the best parameters as a table
+            
             if "coefficients" in results:
                 st.write("### Model Coefficients")
                 coefficients = pd.DataFrame({
